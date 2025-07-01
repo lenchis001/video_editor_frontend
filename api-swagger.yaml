@@ -1,0 +1,168 @@
+openapi: 3.0.0
+info:
+  title: video_edit_backend
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api/video
+paths:
+  /upload:
+    post:
+      summary: Upload file(s)
+      parameters:
+        - in: query
+          name: sessionId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                video1:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Bad Request
+        '409':
+          description: Conflict
+  /process:
+    post:
+      summary: Create process task
+      parameters:
+        - in: query
+          name: sessionId
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                outputFormat:
+                  type: string
+                videoCodec:
+                  type: string
+                  nullable: true
+                audioCodec:
+                  type: string
+                  nullable: true
+                videoBitrate:
+                  type: [string, number]
+                  nullable: true
+                audioBitrate:
+                  type: [string, number]
+                  nullable: true
+                resolution:
+                  type: object
+                  nullable: true
+                  properties:
+                    width:
+                      type: integer
+                    height:
+                      type: integer
+                frameRate:
+                  type: number
+                  nullable: true
+                cut:
+                  type: object
+                  nullable: true
+                  properties:
+                    start:
+                      type: number
+                      nullable: true
+                    end:
+                      type: number
+                      nullable: true
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Not Found
+        '409':
+          description: Conflict
+  /status:
+    get:
+      summary: Get status
+      parameters:
+        - in: query
+          name: sessionId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Success
+        '404':
+          description: Not Found
+  /download:
+    get:
+      summary: Download result
+      parameters:
+        - in: query
+          name: sessionId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: File
+  /internal/complete:
+    post:
+      summary: Internal: Complete processing
+      parameters:
+        - in: query
+          name: sessionId
+          schema:
+            type: string
+          required: true
+        - in: header
+          name: x-api-key
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                output:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Success
+        '403':
+          description: Forbidden
+  /internal/download:
+    get:
+      summary: Internal: Download input file
+      parameters:
+        - in: query
+          name: sessionId
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: filename
+          schema:
+            type: string
+          required: true
+        - in: header
+          name: x-api-key
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: File
+        '403':
+          description: Forbidden
