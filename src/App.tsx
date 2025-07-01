@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Container, Navbar, NavbarBrand, Progress, Button, Alert } from 'reactstrap';
+import React, { useState, useEffect } from 'react';
+import { Container, Navbar, NavbarBrand, Progress, Button, Alert, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import VideoUpload from './components/VideoUpload';
 import VideoProcessParams from './components/VideoProcessParams';
 
@@ -15,6 +15,19 @@ function App() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Usage agreement modal state
+  const [showAgreement, setShowAgreement] = useState(false);
+
+  useEffect(() => {
+    const agreed = localStorage.getItem('usageAgreementAccepted');
+    if (!agreed) setShowAgreement(true);
+  }, []);
+
+  const handleAgreementAccept = () => {
+    localStorage.setItem('usageAgreementAccepted', 'true');
+    setShowAgreement(false);
+  };
 
   // Handler after upload
   const handleUploadSuccess = (sessionId: string) => {
@@ -66,6 +79,26 @@ function App() {
 
   return (
     <>
+      {/* Usage Agreement Modal */}
+      <Modal isOpen={showAgreement} backdrop="static" centered>
+        <ModalHeader>Usage Agreement</ModalHeader>
+        <ModalBody>
+          <p>
+            By using this service, you acknowledge and agree that any files you upload will be stored temporarily for processing and for a limited time after processing to allow you to download the results. Files may be deleted at any time after processing is complete.
+          </p>
+          <p>
+            <strong>It is strictly forbidden to upload, process, or use any media content that is protected by copyright unless you have the legal right to do so.</strong>
+          </p>
+          <p>
+            You must agree to these terms to use the service.
+          </p>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="primary" onClick={handleAgreementAccept}>
+            I Agree
+          </Button>
+        </ModalFooter>
+      </Modal>
       <Navbar color="dark" dark expand="md">
         <NavbarBrand href="/">Video Edit Frontend</NavbarBrand>
       </Navbar>

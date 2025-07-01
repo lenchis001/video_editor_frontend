@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Form, FormGroup, Label, Input, Alert, Spinner } from 'reactstrap';
+import { Button, Form, FormGroup, Label, Input, Alert, Spinner, Progress } from 'reactstrap';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://192.168.0.108:3000';
 
@@ -11,6 +11,7 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ onSuccess }) => {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [progress, setProgress] = useState<number>(0);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -26,28 +27,43 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ onSuccess }) => {
     }
     setLoading(true);
     setMessage(null);
+    setProgress(0);
 
     const formData = new FormData();
     formData.append('video1', file);
 
-    try {
-      const res = await fetch(`${API_URL}/api/video/upload?sessionId=${crypto.randomUUID()}`, {
-        method: 'POST',
-        body: formData,
-      });
-      if (res.ok) {
-        // Assume backend returns { sessionId: string }
-        const data = await res.json();
+    // Use XMLHttpRequest for upload progress
+    const sessionId = crypto.randomUUID();
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `${API_URL}/api/video/upload?sessionId=${sessionId}`);
+
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        setProgress(Math.round((event.loaded / event.total) * 100));
+      }
+    };
+
+    xhr.onload = () => {
+      setLoading(false);
+      if (xhr.status >= 200 && xhr.status < 300) {
         setMessage('Video uploaded successfully!');
-        onSuccess(data.sessionId || new URL(res.url).searchParams.get('sessionId') || '');
+        try {
+          const data = JSON.parse(xhr.responseText);
+          onSuccess(data.sessionId || sessionId);
+        } catch {
+          onSuccess(sessionId);
+        }
       } else {
         setMessage('Upload failed.');
       }
-    } catch (err) {
-      setMessage('Error uploading video.');
-    } finally {
+    };
+
+    xhr.onerror = () => {
       setLoading(false);
-    }
+      setMessage('Error uploading video.');
+    };
+
+    xhr.send(formData);
   };
 
   return (
@@ -65,6 +81,11 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ onSuccess }) => {
       <Button color="primary" type="submit" disabled={loading}>
         {loading ? <Spinner size="sm" /> : 'Upload'}
       </Button>
+      {loading && (
+        <Progress value={progress} className="mt-3" animated>
+          {progress}%
+        </Progress>
+      )}
       {message && <Alert className="mt-3">{message}</Alert>}
     </Form>
   );
