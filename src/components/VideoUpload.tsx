@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Form, FormGroup, Label, Input, Alert, Spinner, Progress } from 'reactstrap';
+import { useTranslation } from 'react-i18next';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://192.168.0.108:3000';
 
@@ -12,6 +13,7 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [progress, setProgress] = useState<number>(0);
+  const { t } = useTranslation();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -22,7 +24,7 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ onSuccess }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!file) {
-      setMessage('Please select a file.');
+      setMessage(t('upload.select'));
       return;
     }
     setLoading(true);
@@ -46,7 +48,7 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ onSuccess }) => {
     xhr.onload = () => {
       setLoading(false);
       if (xhr.status >= 200 && xhr.status < 300) {
-        setMessage('Video uploaded successfully!');
+        setMessage(t('upload.success'));
         try {
           const data = JSON.parse(xhr.responseText);
           onSuccess(data.sessionId || sessionId);
@@ -54,13 +56,13 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ onSuccess }) => {
           onSuccess(sessionId);
         }
       } else {
-        setMessage('Upload failed.');
+        setMessage(t('upload.failed'));
       }
     };
 
     xhr.onerror = () => {
       setLoading(false);
-      setMessage('Error uploading video.');
+      setMessage(t('upload.error'));
     };
 
     xhr.send(formData);
@@ -69,7 +71,7 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ onSuccess }) => {
   return (
     <Form onSubmit={handleSubmit}>
       <FormGroup>
-        <Label for="videoFile">Upload Video</Label>
+        <Label for="videoFile">{t('upload.label')}</Label>
         <Input
           type="file"
           name="video"
@@ -79,7 +81,7 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ onSuccess }) => {
         />
       </FormGroup>
       <Button color="primary" type="submit" disabled={loading}>
-        {loading ? <Spinner size="sm" /> : 'Upload'}
+        {loading ? <Spinner size="sm" /> : t('upload.button')}
       </Button>
       {loading && (
         <Progress value={progress} className="mt-3" animated>

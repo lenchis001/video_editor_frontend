@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Form, FormGroup, Label, Input, Row, Col, Spinner } from 'reactstrap';
+import { useTranslation } from 'react-i18next';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://192.168.0.108:3000';
 
@@ -9,9 +10,9 @@ interface Props {
 }
 
 const panels = [
-  { key: 'format', label: 'Format & Codecs' },
-  { key: 'bitrate', label: 'Bitrate & Resolution' },
-  { key: 'timing', label: 'Timing & Cut' },
+  { key: 'format', label: 'params.format' },
+  { key: 'bitrate', label: 'params.bitrate' },
+  { key: 'timing', label: 'params.timing' },
 ];
 
 const VideoProcessParams: React.FC<Props> = ({ sessionId, onStart }) => {
@@ -27,6 +28,7 @@ const VideoProcessParams: React.FC<Props> = ({ sessionId, onStart }) => {
   const [cutEnd, setCutEnd] = useState('');
   const [loading, setLoading] = useState(false);
   const [activePanel, setActivePanel] = useState('format');
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,14 +73,14 @@ const VideoProcessParams: React.FC<Props> = ({ sessionId, onStart }) => {
           }}
           onClick={() => setActivePanel('format')}
         >
-          Format & Codecs
+          {t('params.format')}
         </div>
         {activePanel === 'format' && (
           <div style={{ padding: 16 }}>
             <Row>
               <Col md={4}>
                 <FormGroup>
-                  <Label>Output Format</Label>
+                  <Label>{t('params.outputFormat')}</Label>
                   <Input type="select" value={outputFormat} onChange={e => setOutputFormat(e.target.value)}>
                     <option value="mp4">mp4</option>
                     <option value="webm">webm</option>
@@ -89,13 +91,13 @@ const VideoProcessParams: React.FC<Props> = ({ sessionId, onStart }) => {
               </Col>
               <Col md={4}>
                 <FormGroup>
-                  <Label>Video Codec</Label>
+                  <Label>{t('params.videoCodec')}</Label>
                   <Input value={videoCodec} onChange={e => setVideoCodec(e.target.value)} placeholder="e.g. h264" />
                 </FormGroup>
               </Col>
               <Col md={4}>
                 <FormGroup>
-                  <Label>Audio Codec</Label>
+                  <Label>{t('params.audioCodec')}</Label>
                   <Input value={audioCodec} onChange={e => setAudioCodec(e.target.value)} placeholder="e.g. aac" />
                 </FormGroup>
               </Col>
@@ -115,31 +117,31 @@ const VideoProcessParams: React.FC<Props> = ({ sessionId, onStart }) => {
           }}
           onClick={() => setActivePanel('bitrate')}
         >
-          Bitrate & Resolution
+          {t('params.bitrate')}
         </div>
         {activePanel === 'bitrate' && (
           <div style={{ padding: 16 }}>
             <Row>
               <Col md={4}>
                 <FormGroup>
-                  <Label>Video Bitrate</Label>
+                  <Label>{t('params.videoBitrate')}</Label>
                   <Input value={videoBitrate} onChange={e => setVideoBitrate(e.target.value)} placeholder="e.g. 1000k" />
                 </FormGroup>
               </Col>
               <Col md={4}>
                 <FormGroup>
-                  <Label>Audio Bitrate</Label>
+                  <Label>{t('params.audioBitrate')}</Label>
                   <Input value={audioBitrate} onChange={e => setAudioBitrate(e.target.value)} placeholder="e.g. 128k" />
                 </FormGroup>
               </Col>
               <Col md={4}>
                 <FormGroup>
-                  <Label>Resolution</Label>
+                  <Label>{t('params.resolution')}</Label>
                   <Input
                     type="number"
                     value={width}
                     onChange={e => setWidth(e.target.value)}
-                    placeholder="Width"
+                    placeholder={t('params.width')}
                     min={1}
                     style={{ display: 'inline', width: '45%', marginRight: '5%' }}
                   />
@@ -147,7 +149,7 @@ const VideoProcessParams: React.FC<Props> = ({ sessionId, onStart }) => {
                     type="number"
                     value={height}
                     onChange={e => setHeight(e.target.value)}
-                    placeholder="Height"
+                    placeholder={t('params.height')}
                     min={1}
                     style={{ display: 'inline', width: '45%' }}
                   />
@@ -169,27 +171,27 @@ const VideoProcessParams: React.FC<Props> = ({ sessionId, onStart }) => {
           }}
           onClick={() => setActivePanel('timing')}
         >
-          Timing & Cut
+          {t('params.timing')}
         </div>
         {activePanel === 'timing' && (
           <div style={{ padding: 16 }}>
             <Row>
               <Col md={4}>
                 <FormGroup>
-                  <Label>Frame Rate</Label>
+                  <Label>{t('params.frameRate')}</Label>
                   <Input value={frameRate} onChange={e => setFrameRate(e.target.value)} placeholder="e.g. 30" />
                 </FormGroup>
               </Col>
               <Col md={4}>
                 <FormGroup>
-                  <Label>Cut Start (sec)</Label>
-                  <Input value={cutStart} onChange={e => setCutStart(e.target.value)} placeholder="Start time" />
+                  <Label>{t('params.cutStart')}</Label>
+                  <Input value={cutStart} onChange={e => setCutStart(e.target.value)} placeholder={t('params.cutStart')} />
                 </FormGroup>
               </Col>
               <Col md={4}>
                 <FormGroup>
-                  <Label>Cut End (sec)</Label>
-                  <Input value={cutEnd} onChange={e => setCutEnd(e.target.value)} placeholder="End time" />
+                  <Label>{t('params.cutEnd')}</Label>
+                  <Input value={cutEnd} onChange={e => setCutEnd(e.target.value)} placeholder={t('params.cutEnd')} />
                 </FormGroup>
               </Col>
             </Row>
@@ -198,7 +200,7 @@ const VideoProcessParams: React.FC<Props> = ({ sessionId, onStart }) => {
       </div>
 
       <Button color="primary" type="submit" disabled={loading}>
-        {loading ? <Spinner size="sm" /> : 'Start Processing'}
+        {loading ? <Spinner size="sm" /> : t('params.start')}
       </Button>
     </Form>
   );
