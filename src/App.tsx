@@ -71,16 +71,15 @@ function App() {
   const pollStatus = async () => {
     if (!sessionId) return;
     try {
-      const API_URL = process.env.REACT_APP_API_URL || 'http://192.168.0.108:3000';
       let status = '';
       while (status !== 'done') {
-        const res = await fetch(`${API_URL}/api/video/status?sessionId=${sessionId}`);
+        const res = await fetch(`/api/video/status?sessionId=${sessionId}`);
         if (!res.ok) throw new Error('Failed to get status');
         const data = await res.json();
         status = data.status;
         if (status === 'done') {
           setStep(Step.Download);
-          setResultUrl(`${API_URL}/api/video/download?sessionId=${sessionId}`);
+          setResultUrl(`/api/video/download?sessionId=${sessionId}`);
           break;
         } else if (status === 'error') {
           setError(t('error.failed'));

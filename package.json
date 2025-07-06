@@ -15,8 +15,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "start:insecure": "BROWSER='google-chrome --disable-web-security' react-scripts start"
+    "eject": "react-scripts eject"
   },
   "devDependencies": {
     "@types/react": "^19.1.8",

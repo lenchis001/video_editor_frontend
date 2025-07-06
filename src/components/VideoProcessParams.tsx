@@ -2,12 +2,30 @@ import React, { useState } from 'react';
 import { Button, Form, FormGroup, Label, Input, Row, Col, Spinner } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://192.168.0.108:3000';
-
 interface Props {
   sessionId: string;
   onStart: () => void;
 }
+
+const VIDEO_CODECS = [
+  { value: '', label: '-' },
+  { value: 'h264', label: 'h264' },
+  { value: 'vp8', label: 'vp8' },
+  { value: 'vp9', label: 'vp9' },
+  { value: 'hevc', label: 'hevc' },
+  { value: 'mpeg4', label: 'mpeg4' },
+  { value: 'theora', label: 'theora' },
+];
+
+const AUDIO_CODECS = [
+  { value: '', label: '-' },
+  { value: 'aac', label: 'aac' },
+  { value: 'mp3', label: 'mp3' },
+  { value: 'opus', label: 'opus' },
+  { value: 'vorbis', label: 'vorbis' },
+  { value: 'pcm_s16le', label: 'pcm_s16le' },
+  { value: 'ac3', label: 'ac3' },
+];
 
 const panels = [
   { key: 'format', label: 'params.format' },
@@ -45,7 +63,7 @@ const VideoProcessParams: React.FC<Props> = ({ sessionId, onStart }) => {
     if (cutStart || cutEnd) params.cut = { start: cutStart ? Number(cutStart) : null, end: cutEnd ? Number(cutEnd) : null };
 
     try {
-      const res = await fetch(`${API_URL}/api/video/process?sessionId=${sessionId}`, {
+      const res = await fetch(`/api/video/process?sessionId=${sessionId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(params),
@@ -92,13 +110,29 @@ const VideoProcessParams: React.FC<Props> = ({ sessionId, onStart }) => {
               <Col md={4}>
                 <FormGroup>
                   <Label>{t('params.videoCodec')}</Label>
-                  <Input value={videoCodec} onChange={e => setVideoCodec(e.target.value)} placeholder="e.g. h264" />
+                  <Input
+                    type="select"
+                    value={videoCodec}
+                    onChange={e => setVideoCodec(e.target.value)}
+                  >
+                    {VIDEO_CODECS.map(opt => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </Input>
                 </FormGroup>
               </Col>
               <Col md={4}>
                 <FormGroup>
                   <Label>{t('params.audioCodec')}</Label>
-                  <Input value={audioCodec} onChange={e => setAudioCodec(e.target.value)} placeholder="e.g. aac" />
+                  <Input
+                    type="select"
+                    value={audioCodec}
+                    onChange={e => setAudioCodec(e.target.value)}
+                  >
+                    {AUDIO_CODECS.map(opt => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </Input>
                 </FormGroup>
               </Col>
             </Row>
