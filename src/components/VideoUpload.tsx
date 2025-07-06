@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Form, FormGroup, Label, Input, Alert, Spinner, Progress } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
+import { v4 as uuidv4 } from 'uuid';
 
 interface VideoUploadProps {
   onSuccess: (sessionId: string) => void;
@@ -33,7 +34,7 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ onSuccess }) => {
     formData.append('video1', file);
 
     // Use XMLHttpRequest for upload progress
-    const sessionId = crypto.randomUUID();
+    const sessionId = uuidv4();
     const xhr = new XMLHttpRequest();
     xhr.open('POST', `/api/video/upload?sessionId=${sessionId}`);
 

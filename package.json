@@ -4,12 +4,13 @@
   "private": true,
   "dependencies": {
     "bootstrap": "^5.3.2",
+    "i18next": "^23.10.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-i18next": "^13.2.2",
     "react-scripts": "5.0.1",
     "reactstrap": "^9.2.0",
-    "i18next": "^23.10.1",
-    "react-i18next": "^13.2.2"
+    "uuid": "^11.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -33,5 +34,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://192.168.0.108:3000"
+  "proxy": "http://192.168.0.108:3001"
 }
