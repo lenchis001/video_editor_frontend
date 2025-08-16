@@ -11,6 +11,7 @@
   "step.download": "Krok 4/4: Pobierz wynik",
   "processing.title": "Przetwarzanie...",
   "processing.wait": "Proszę czekać, trwa przetwarzanie wideo.",
+  "processing.progress": "Postęp:",
   "processing.complete": "Przetwarzanie zakończone!",
   "download.result": "Pobierz wynik",
   "download.new": "Nowe zadanie",

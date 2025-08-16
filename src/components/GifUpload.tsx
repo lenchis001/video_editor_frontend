@@ -3,11 +3,11 @@ import { Button, Form, FormGroup, Label, Input, Alert, Spinner, Progress } from 
 import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 
-interface VideoUploadProps {
+interface GifUploadProps {
   onSuccess: (sessionId: string) => void;
 }
 
-const VideoUpload: React.FC<VideoUploadProps> = ({ onSuccess }) => {
+const GifUpload: React.FC<GifUploadProps> = ({ onSuccess }) => {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -26,6 +26,7 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ onSuccess }) => {
       setMessage(t('upload.select'));
       return;
     }
+
     setLoading(true);
     setMessage(null);
     setProgress(0);
@@ -36,7 +37,7 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ onSuccess }) => {
     // Use XMLHttpRequest for upload progress
     const sessionId = uuidv4();
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', `/api/video/upload?id=${sessionId}`);
+    xhr.open('POST', `/api/gif/upload?id=${sessionId}`);
 
     xhr.upload.onprogress = (event) => {
       if (event.lengthComputable) {
@@ -92,4 +93,4 @@ const VideoUpload: React.FC<VideoUploadProps> = ({ onSuccess }) => {
   );
 };
 
-export default VideoUpload;
+export default GifUpload;

@@ -9,8 +9,9 @@
   "step.params": "Passaggio 2/4: Impostazione parametri",
   "step.processing": "Passaggio 3/4: Elaborazione",
   "step.download": "Passaggio 4/4: Scarica risultato",
-  "processing.title": "Elaborazione...",
-  "processing.wait": "Attendi mentre il tuo video viene elaborato.",
+    "processing.title": "Elaborazione in corso...",
+  "processing.wait": "Attendere prego mentre il file viene elaborato.",
+  "processing.progress": "Progresso:",
   "processing.complete": "Elaborazione completata!",
   "download.result": "Scarica risultato",
   "download.new": "Nuova attività",
@@ -37,5 +38,7 @@
   "params.start": "Avvia elaborazione",
   "error.processing": "Errore durante l'elaborazione.",
   "error.failed": "Elaborazione fallita.",
-  "language": "Lingua"
+  "language": "Lingua",
+  "type.video": "Video",
+  "type.gif": "GIF"
 }

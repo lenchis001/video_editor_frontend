@@ -7,53 +7,21 @@ interface Props {
   onStart: () => void;
 }
 
-const VIDEO_CODECS = [
-  { value: '', label: '-' },
-  { value: 'h264', label: 'h264' },
-  { value: 'vp8', label: 'vp8' },
-  { value: 'vp9', label: 'vp9' },
-  { value: 'hevc', label: 'hevc' },
-  { value: 'mpeg4', label: 'mpeg4' },
-  { value: 'theora', label: 'theora' },
-];
-
-const AUDIO_CODECS = [
-  { value: '', label: '-' },
-  { value: 'aac', label: 'aac' },
-  { value: 'mp3', label: 'mp3' },
-  { value: 'opus', label: 'opus' },
-  { value: 'vorbis', label: 'vorbis' },
-  { value: 'pcm_s16le', label: 'pcm_s16le' },
-  { value: 'ac3', label: 'ac3' },
-];
-
-const panels = [
-  { key: 'format', label: 'params.format' },
-  { key: 'resolution', label: 'params.resolution' },
-  { key: 'timing', label: 'params.timing' },
-];
-
-const VideoProcessParams: React.FC<Props> = ({ sessionId, onStart }) => {
-  const [format, setFormat] = useState('mp4');
-  const [videoCodec, setVideoCodec] = useState('');
-  const [audioCodec, setAudioCodec] = useState('');
+const GifProcessParams: React.FC<Props> = ({ sessionId, onStart }) => {
   const [width, setWidth] = useState('');
   const [height, setHeight] = useState('');
   const [frameRate, setFrameRate] = useState('');
   const [cutStart, setCutStart] = useState('');
   const [cutEnd, setCutEnd] = useState('');
   const [loading, setLoading] = useState(false);
-  const [activePanel, setActivePanel] = useState('format');
+  const [activePanel, setActivePanel] = useState('resolution');
   const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const params: any = {
-      format: format,
-    };
-    if (videoCodec) params.videoCodec = videoCodec;
-    if (audioCodec) params.audioCodec = audioCodec;
+    const params: any = {};
+    
     if (width) params.width = Number(width);
     if (height) params.height = Number(height);
     if (frameRate) params.frameRate = Number(frameRate);
@@ -66,7 +34,7 @@ const VideoProcessParams: React.FC<Props> = ({ sessionId, onStart }) => {
     }
 
     try {
-      const res = await fetch(`/api/video/process?id=${sessionId}`, {
+      const res = await fetch(`/api/gif/process?id=${sessionId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(params),
@@ -83,67 +51,7 @@ const VideoProcessParams: React.FC<Props> = ({ sessionId, onStart }) => {
 
   return (
     <Form onSubmit={handleSubmit}>
-      {/* Panel 1: Format & Codecs */}
-      <div style={{ border: '1px solid #ccc', borderRadius: 4, marginBottom: 8 }}>
-        <div
-          style={{
-            background: activePanel === 'format' ? '#f5f5f5' : '#e9ecef',
-            padding: 10,
-            cursor: 'pointer',
-            fontWeight: 'bold',
-          }}
-          onClick={() => setActivePanel('format')}
-        >
-          {t('params.format')}
-        </div>
-        {activePanel === 'format' && (
-          <div style={{ padding: 16 }}>
-            <Row>
-              <Col md={4}>
-                <FormGroup>
-                  <Label>{t('params.outputFormat')}</Label>
-                  <Input type="select" value={format} onChange={e => setFormat(e.target.value)}>
-                    <option value="mp4">mp4</option>
-                    <option value="webm">webm</option>
-                    <option value="mov">mov</option>
-                    <option value="avi">avi</option>
-                  </Input>
-                </FormGroup>
-              </Col>
-              <Col md={4}>
-                <FormGroup>
-                  <Label>{t('params.videoCodec')}</Label>
-                  <Input
-                    type="select"
-                    value={videoCodec}
-                    onChange={e => setVideoCodec(e.target.value)}
-                  >
-                    {VIDEO_CODECS.map(opt => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
-                  </Input>
-                </FormGroup>
-              </Col>
-              <Col md={4}>
-                <FormGroup>
-                  <Label>{t('params.audioCodec')}</Label>
-                  <Input
-                    type="select"
-                    value={audioCodec}
-                    onChange={e => setAudioCodec(e.target.value)}
-                  >
-                    {AUDIO_CODECS.map(opt => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
-                  </Input>
-                </FormGroup>
-              </Col>
-            </Row>
-          </div>
-        )}
-      </div>
-
-      {/* Panel 2: Resolution */}
+      {/* Panel 1: Resolution */}
       <div style={{ border: '1px solid #ccc', borderRadius: 4, marginBottom: 8 }}>
         <div
           style={{
@@ -188,7 +96,7 @@ const VideoProcessParams: React.FC<Props> = ({ sessionId, onStart }) => {
         )}
       </div>
 
-      {/* Panel 3: Timing & Cut */}
+      {/* Panel 2: Timing & Cut */}
       <div style={{ border: '1px solid #ccc', borderRadius: 4, marginBottom: 8 }}>
         <div
           style={{
@@ -211,9 +119,9 @@ const VideoProcessParams: React.FC<Props> = ({ sessionId, onStart }) => {
                     type="number" 
                     value={frameRate} 
                     onChange={e => setFrameRate(e.target.value)} 
-                    placeholder="e.g. 30" 
+                    placeholder="e.g. 15" 
                     min={1}
-                    max={120}
+                    max={60}
                   />
                 </FormGroup>
               </Col>
@@ -255,4 +163,4 @@ const VideoProcessParams: React.FC<Props> = ({ sessionId, onStart }) => {
   );
 };
 
-export default VideoProcessParams;
+export default GifProcessParams;

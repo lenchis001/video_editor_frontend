@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Navbar, NavbarBrand, Progress, Button, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { Container, Navbar, NavbarBrand, Progress, Button, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Nav, NavItem, NavLink } from 'reactstrap';
 import VideoUpload from './components/VideoUpload';
 import VideoProcessParams from './components/VideoProcessParams';
+import GifUpload from './components/GifUpload';
+import GifProcessParams from './components/GifProcessParams';
 import { useTranslation } from 'react-i18next';
 
 enum Step {
@@ -9,6 +11,11 @@ enum Step {
   SetupParams,
   Processing,
   Download
+}
+
+enum ProcessType {
+  Video = 'video',
+  Gif = 'gif'
 }
 
 const LANGS = [
@@ -25,10 +32,12 @@ const LANGS = [
 
 function App() {
   const [step, setStep] = useState<Step>(Step.Upload);
+  const [processType, setProcessType] = useState<ProcessType>(ProcessType.Video);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showAgreement, setShowAgreement] = useState(false);
+  const [progress, setProgress] = useState<number>(0);
 
   // Language dropdown state
   const [langDropdown, setLangDropdown] = useState(false);
@@ -64,6 +73,7 @@ function App() {
   const handleProcessStart = () => {
     setStep(Step.Processing);
     setError(null);
+    setProgress(0);
     pollStatus();
   };
 
@@ -73,15 +83,22 @@ function App() {
     try {
       let status = '';
       while (status !== 'done') {
-        const res = await fetch(`/api/video/status?sessionId=${sessionId}`);
+        const res = await fetch(`/api/${processType}/status?id=${sessionId}`);
         if (!res.ok) throw new Error('Failed to get status');
         const data = await res.json();
         status = data.status;
+        
+        // Update progress if available
+        if (data.progress !== undefined) {
+          setProgress(Math.round(data.progress));
+        }
+        
         if (status === 'done') {
+          setProgress(100);
           setStep(Step.Download);
-          setResultUrl(`/api/video/download?sessionId=${sessionId}`);
+          setResultUrl(`/api/${processType}/download?id=${sessionId}`);
           break;
-        } else if (status === 'error') {
+        } else if (status === 'error' || status === 'failed') {
           setError(t('error.failed'));
           break;
         }
@@ -98,6 +115,7 @@ function App() {
     setSessionId(null);
     setResultUrl(null);
     setError(null);
+    setProgress(0);
   };
 
   return (
@@ -145,13 +163,44 @@ function App() {
         {step === Step.Upload && (
           <>
             <h3 className="mb-3">{t('step.upload')}</h3>
-            <VideoUpload onSuccess={handleUploadSuccess} />
+            
+            {/* Type selection tabs */}
+            <Nav tabs className="mb-3">
+              <NavItem>
+                <NavLink 
+                  active={processType === ProcessType.Video}
+                  onClick={() => setProcessType(ProcessType.Video)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {t('type.video')}
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink 
+                  active={processType === ProcessType.Gif}
+                  onClick={() => setProcessType(ProcessType.Gif)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {t('type.gif')}
+                </NavLink>
+              </NavItem>
+            </Nav>
+
+            {processType === ProcessType.Video ? (
+              <VideoUpload onSuccess={handleUploadSuccess} />
+            ) : (
+              <GifUpload onSuccess={handleUploadSuccess} />
+            )}
           </>
         )}
         {step === Step.SetupParams && sessionId && (
           <>
             <h3 className="mb-3">{t('step.params')}</h3>
-            <VideoProcessParams sessionId={sessionId} onStart={handleProcessStart} />
+            {processType === ProcessType.Video ? (
+              <VideoProcessParams sessionId={sessionId} onStart={handleProcessStart} />
+            ) : (
+              <GifProcessParams sessionId={sessionId} onStart={handleProcessStart} />
+            )}
           </>
         )}
         {step === Step.Processing && (
@@ -160,6 +209,13 @@ function App() {
             <div>
               <h4>{t('processing.title')}</h4>
               <p>{t('processing.wait')}</p>
+              <div className="mb-3">
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                  <span>{t('processing.progress')}</span>
+                  <span>{progress}%</span>
+                </div>
+                <Progress value={progress} color="info" striped animated />
+              </div>
             </div>
           </>
         )}

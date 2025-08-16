@@ -9,9 +9,10 @@
   "step.params": "Paso 2/4: Configuración de parámetros",
   "step.processing": "Paso 3/4: Procesando",
   "step.download": "Paso 4/4: Descargar resultado",
-  "processing.title": "Procesando...",
-  "processing.wait": "Por favor, espera mientras tu video está siendo procesado.",
-  "processing.complete": "¡Procesamiento completo!",
+    "processing.title": "Procesando...",
+  "processing.wait": "Por favor espere mientras se procesa su archivo.",
+  "processing.progress": "Progreso:",
+  "processing.complete": "¡Procesamiento completado!",
   "download.result": "Descargar resultado",
   "download.new": "Nueva tarea",
   "upload.label": "Subir video",
@@ -37,5 +38,7 @@
   "params.start": "Iniciar procesamiento",
   "error.processing": "Error durante el procesamiento.",
   "error.failed": "Procesamiento fallido.",
-  "language": "Idioma"
+  "language": "Idioma",
+  "type.video": "Video",
+  "type.gif": "GIF"
 }
